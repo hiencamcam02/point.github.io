@@ -2,57 +2,79 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tích điểm khách hàng</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; max-width: 500px; }
+    input, button { width: 100%; padding: 10px; margin: 5px 0; font-size: 16px; }
+    .info { margin-top: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+    h2 { font-size: 18px; }
+  </style>
 </head>
 <body>
-  <h2>Thêm điểm</h2>
-  <input type="text" id="name" placeholder="Tên khách">
-  <input type="number" id="points" placeholder="Điểm">
-  <button onclick="addPoints()">Lưu</button>
+  <h2>Tìm khách hàng</h2>
+  <input type="text" id="phone" placeholder="Nhập số điện thoại">
+  <button onclick="searchCustomer()">Tìm</button>
 
-  <h2>Danh sách điểm</h2>
-  <table border="1" id="dataTable">
-    <tr><th>ID</th><th>Tên</th><th>Điểm</th><th>Ngày</th></tr>
-  </table>
+  <div id="customerInfo" class="info" style="display:none;">
+    <p><b>Tên:</b> <span id="cName"></span></p>
+    <p><b>Tổng điểm:</b> <span id="cPoints"></span></p>
+    <input type="number" id="change" placeholder="Nhập điểm (+/-)">
+    <button onclick="updatePoints()">Lưu điểm</button>
+  </div>
+
+  <div id="newCustomer" class="info" style="display:none;">
+    <input type="text" id="newName" placeholder="Tên khách">
+    <input type="number" id="newPoints" placeholder="Điểm ban đầu">
+    <button onclick="createCustomer()">Tạo khách hàng mới</button>
+  </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwrtCrHpVbpDmTE1Axrc02tE1JCx0GEuL_yEsIHJA9osME0EfCFm9SuJICQ1b-MRPya/exec"; // thay bằng URL API bạn vừa deploy
+const API_URL = "PASTE_API_URL_HERE"; // thay bằng URL Apps Script
 
-async function loadData() {
-  let res = await fetch(API_URL);
+let currentPhone = "";
+
+async function searchCustomer() {
+  currentPhone = document.getElementById("phone").value;
+  let res = await fetch(`${API_URL}?phone=${currentPhone}`);
   let data = await res.json();
-  let table = document.getElementById("dataTable");
 
-  // xóa dữ liệu cũ
-  table.innerHTML = "<tr><th>ID</th><th>Tên</th><th>Điểm</th><th>Ngày</th></tr>";
-
-  data.forEach(row => {
-    table.innerHTML += `<tr>
-      <td>${row.id}</td>
-      <td>${row.name}</td>
-      <td>${row.points}</td>
-      <td>${row.date}</td>
-    </tr>`;
-  });
+  if (data.phone) {
+    document.getElementById("customerInfo").style.display = "block";
+    document.getElementById("newCustomer").style.display = "none";
+    document.getElementById("cName").innerText = data.name;
+    document.getElementById("cPoints").innerText = data.points;
+  } else {
+    document.getElementById("customerInfo").style.display = "none";
+    document.getElementById("newCustomer").style.display = "block";
+  }
 }
 
-async function addPoints() {
-  let name = document.getElementById("name").value;
-  let points = parseInt(document.getElementById("points").value);
-  let id = Date.now(); // tạo ID đơn giản
-  
+async function updatePoints() {
+  let change = parseInt(document.getElementById("change").value);
+  let name = document.getElementById("cName").innerText;
+
   await fetch(API_URL, {
     method: "POST",
-    body: JSON.stringify({ id, name, points }),
+    body: JSON.stringify({ phone: currentPhone, name, change }),
     headers: { "Content-Type": "application/json" }
   });
-
-  alert("Đã lưu!");
-  loadData();
+  alert("Cập nhật thành công!");
+  searchCustomer();
 }
 
-// tải dữ liệu ban đầu
-loadData();
+async function createCustomer() {
+  let name = document.getElementById("newName").value;
+  let points = parseInt(document.getElementById("newPoints").value);
+
+  await fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({ phone: currentPhone, name, change: points }),
+    headers: { "Content-Type": "application/json" }
+  });
+  alert("Đã tạo khách hàng mới!");
+  searchCustomer();
+}
 </script>
 </body>
 </html>
