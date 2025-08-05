@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Sixnature Loyalty</title>
+  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/hiencamcam02/point.github.io/main/favicon.ico">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-green-50 min-h-screen flex items-center justify-center p-4">
@@ -46,7 +47,7 @@
   </div>
 
   <script>
-    const API_URL = "https://workers-playground-aged-disk-0701.hiencamcam02.workers.dev/"; // 🔥 thay bằng URL Worker của bạn
+    const API_URL = "https://your-worker.workers.dev"; // 🔥 thay bằng Worker URL của bạn
 
     let currentCustomer = null;
 
@@ -54,7 +55,6 @@
       const phone = document.getElementById("phone").value.trim();
       if (!phone) {
         alert("Vui lòng nhập số điện thoại");
-        
         return;
       }
 
@@ -74,8 +74,17 @@
           currentCustomer = { phone };
         } else {
           // Tìm thấy
+          infoBox.classList.remove("hidden");
+          newFields.classList.add("hidden");
+          infoBox.innerHTML = `
+            <p><strong>👤 Tên:</strong> ${data.name}</p>
+            <p><strong>📱 SĐT:</strong> ${data.phone}</p>
+            <p><strong>⭐ Tổng điểm:</strong> ${data.points}</p>
+          `;
+
+          // Hiển thị lịch sử (5 lần gần nhất)
           if (data.history && data.history.length > 0) {
-            infoBox.innerHTML += "<p class='mt-2 font-semibold'>📜 Lịch sử:</p>";
+            infoBox.innerHTML += "<p class='mt-2 font-semibold'>📜 Lịch sử gần đây:</p>";
             infoBox.innerHTML += "<ul class='list-disc ml-5 text-sm'>";
             data.history.slice(-5).reverse().forEach(h => {
               const date = new Date(h.time).toLocaleString("vi-VN");
@@ -84,13 +93,6 @@
             infoBox.innerHTML += "</ul>";
           }
 
-          infoBox.classList.remove("hidden");
-          newFields.classList.add("hidden");
-          infoBox.innerHTML = `
-            <p><strong>👤 Tên:</strong> ${data.name}</p>
-            <p><strong>📱 SĐT:</strong> ${data.phone}</p>
-            <p><strong>⭐ Tổng điểm:</strong> ${data.points}</p>
-          `;
           currentCustomer = data;
         }
 
