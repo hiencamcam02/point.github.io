@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <title>Sixnature Loyalty</title>
   <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/hiencamcam02/point.github.io/main/favicon.ico">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Dùng CSS build sẵn -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-green-50 min-h-screen flex items-center justify-center p-4">
   <div class="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
@@ -47,7 +48,7 @@
   </div>
 
   <script>
-    const API_URL = "https://your-worker.workers.dev"; // 🔥 thay bằng Worker URL của bạn
+    const API_URL = "https://your-worker.workers.dev"; // 🔥 thay bằng Worker URL thật
 
     let currentCustomer = null;
 
@@ -67,13 +68,11 @@
         const newFields = document.getElementById("newCustomerFields");
 
         if (Object.keys(data).length === 0) {
-          // Không tìm thấy
           infoBox.classList.remove("hidden");
           infoBox.innerHTML = `<p class="text-red-600">Không tìm thấy khách hàng. Vui lòng nhập tên để thêm mới.</p>`;
           newFields.classList.remove("hidden");
           currentCustomer = { phone };
         } else {
-          // Tìm thấy
           infoBox.classList.remove("hidden");
           newFields.classList.add("hidden");
           infoBox.innerHTML = `
@@ -82,7 +81,6 @@
             <p><strong>⭐ Tổng điểm:</strong> ${data.points}</p>
           `;
 
-          // Hiển thị lịch sử (5 lần gần nhất)
           if (data.history && data.history.length > 0) {
             infoBox.innerHTML += "<p class='mt-2 font-semibold'>📜 Lịch sử gần đây:</p>";
             infoBox.innerHTML += "<ul class='list-disc ml-5 text-sm'>";
@@ -127,7 +125,7 @@
         const data = await res.json();
 
         alert(`✅ Lưu thành công! Tổng điểm mới của ${data.name} (${data.phone}) là ${data.points}`);
-        location.reload(); // reload để cập nhật lại
+        location.reload();
       } catch (err) {
         console.error(err);
         alert("❌ Lỗi khi lưu điểm");
