@@ -54,6 +54,7 @@
       const phone = document.getElementById("phone").value.trim();
       if (!phone) {
         alert("Vui lòng nhập số điện thoại");
+        
         return;
       }
 
@@ -73,6 +74,16 @@
           currentCustomer = { phone };
         } else {
           // Tìm thấy
+          if (data.history && data.history.length > 0) {
+            infoBox.innerHTML += "<p class='mt-2 font-semibold'>📜 Lịch sử:</p>";
+            infoBox.innerHTML += "<ul class='list-disc ml-5 text-sm'>";
+            data.history.slice(-5).reverse().forEach(h => {
+              const date = new Date(h.time).toLocaleString("vi-VN");
+              infoBox.innerHTML += `<li>${h.change > 0 ? "+" : ""}${h.change} điểm lúc ${date}</li>`;
+            });
+            infoBox.innerHTML += "</ul>";
+          }
+
           infoBox.classList.remove("hidden");
           newFields.classList.add("hidden");
           infoBox.innerHTML = `
